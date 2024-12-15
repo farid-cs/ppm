@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <math.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define HEIGHT 800
 #define WIDTH  800
@@ -23,7 +23,7 @@ const Color GREEN = { .red = 0,   .green = 255, .blue = 0   };
 const Color BLUE  = { .red = 0,   .green = 0,   .blue = 255 };
 const Color WHITE = { .red = 255, .green = 255, .blue = 255 };
 
-void fill_with_color(Color* image, Color color, int width, int height)
+void fill_with_color(Color *image, Color color, int width, int height)
 {
 	for (int j = 0; j != height; j++)
 	for (int i = 0; i != width; i++) {
@@ -31,14 +31,14 @@ void fill_with_color(Color* image, Color color, int width, int height)
 	}
 }
 
-void draw_line(Color* image, Vec2 pos, int len)
+void draw_horizontal_line(Color *image, Vec2 pos, int len)
 {
 	for (int i = 0; i != len; i++) {
 		image[pos.y*WIDTH+pos.x+i] = RED;
 	}
 }
 
-void draw_rectangle(Color* image, Vec2 corner, Vec2 dimensions)
+void draw_rectangle(Color *image, Vec2 corner, Vec2 dimensions)
 {
 	Vec2 row = corner;
 
@@ -48,7 +48,7 @@ void draw_rectangle(Color* image, Vec2 corner, Vec2 dimensions)
 	}
 }
 
-void draw_circle(Color* image, Vec2 center, int radius)
+void draw_circle(Color *image, Vec2 center, int radius)
 {
 	const int steps = 10000000;
 	const double step_size = M_PI/steps;
@@ -56,20 +56,22 @@ void draw_circle(Color* image, Vec2 center, int radius)
 	double teta = step_size;
 
 	for (int i = 1; teta < M_PI; i++) {
+		double teta;
+		Vec2 pos;
+		int len;
+	
 		teta = step_size * i;
-		Vec2 pos = {
-			.x = center.x - sin(teta) * radius,
-			.y = center.y - cos(teta) * radius,
-		};
-		int len = abs((int)(2 * sin(teta) * radius));
+		pos.x = center.x - sin(teta) * radius;
+		pis.y = center.y - cos(teta) * radius;
+		len = abs((int)(2 * sin(teta) * radius));
 
-		draw_line(image, pos, len);
+		draw_horizontal_line(image, pos, len);
 	}
 }
 
-void dump_image_to_file(const char* file_name, Color* image, int height, int width)
+void dump_image_to_file(const char *pathname, Color *image, int height, int width)
 {
-	FILE* file = fopen(file_name, "wb");
+	FILE* file = fopen(pathname, "wb");
 
 	fprintf(file, "P6\n%d %d\n255\n", width, height);
 	fwrite(image, 1, height*width*sizeof(Color), file);
