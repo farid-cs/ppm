@@ -1,91 +1,32 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
 
-#define HEIGHT 800
-#define WIDTH  800
+typedef struct {
+	unsigned char red;
+	unsigned char green;
+	unsigned char blue;
+} Color;
 
-typedef struct Color Color;
-struct Color {
-	char red;
-	char green;
-	char blue;
-};
+static const char IMAGE_PATH[] = "image.ppm";
+static const int IMAGE_WIDTH = 800;
+static const int IMAGE_HEIGHT = 800;
+static const Color BLACK = { .red = 0, .green = 0, .blue = 0 };
 
-typedef struct Vec2 Vec2;
-struct Vec2 {
-	int x;
-	int y;
-};
-
-const Color RED   = { .red = 255, .green = 0,   .blue = 0   };
-const Color GREEN = { .red = 0,   .green = 255, .blue = 0   };
-const Color BLUE  = { .red = 0,   .green = 0,   .blue = 255 };
-const Color WHITE = { .red = 255, .green = 255, .blue = 255 };
-
-void fill_with_color(Color *image, Color color, int width, int height)
+int
+main(void)
 {
-	for (int j = 0; j != height; j++)
-	for (int i = 0; i != width; i++) {
-		image[j*width+i] = color;
-	}
-}
+	Color image[IMAGE_HEIGHT*IMAGE_WIDTH];
+	FILE *file;
 
-void draw_horizontal_line(Color *image, Vec2 pos, int len)
-{
-	for (int i = 0; i != len; i++) {
-		image[pos.y*WIDTH+pos.x+i] = RED;
-	}
-}
+	for (int j = 0; j != IMAGE_HEIGHT; j++)
+		for (int i = 0; i != IMAGE_WIDTH; i++)
+			image[IMAGE_WIDTH*j+i] = BLACK;
 
-void draw_rectangle(Color *image, Vec2 corner, Vec2 dimensions)
-{
-	Vec2 row = corner;
+	file = fopen(IMAGE_PATH, "wb");
 
-	for (int j = 0; j != dimensions.y; j++) {
-		draw_line(image, row, dimensions.x);
-		row.y++;
-	}
-}
-
-void draw_circle(Color *image, Vec2 center, int radius)
-{
-	const int steps = 10000000;
-	const double step_size = M_PI/steps;
-
-	double teta = step_size;
-
-	for (int i = 1; teta < M_PI; i++) {
-		double teta;
-		Vec2 pos;
-		int len;
-	
-		teta = step_size * i;
-		pos.x = center.x - sin(teta) * radius;
-		pis.y = center.y - cos(teta) * radius;
-		len = abs((int)(2 * sin(teta) * radius));
-
-		draw_horizontal_line(image, pos, len);
-	}
-}
-
-void dump_image_to_file(const char *pathname, Color *image, int height, int width)
-{
-	FILE* file = fopen(pathname, "wb");
-
-	fprintf(file, "P6\n%d %d\n255\n", width, height);
-	fwrite(image, 1, height*width*sizeof(Color), file);
+	fprintf(file, "P6\n%d %d\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
+	fwrite(image, sizeof(Color), IMAGE_HEIGHT*IMAGE_WIDTH, file);
 
 	fclose(file);
-}
-
-int main(void)
-{
-	Color image[HEIGHT*WIDTH] = {0};
-
-	fill_with_color(image, WHITE, HEIGHT, WIDTH);
-	draw_circle(image, (Vec2){.x = WIDTH/2, .y = HEIGHT/2}, 300);
-	dump_image_to_file("image.ppm", image, HEIGHT, WIDTH);
 
 	return 0;
 }

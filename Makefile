@@ -1,7 +1,12 @@
-CFLAGS = -Wall -Wextra -O2
-LDFLAGS = -lm
+CC = cc
+CFLAGS = -std=c99 -pedantic -Wall -Wextra
 
-main: main.o
-	cc -o main main.o $(LDFLAGS)
+all: main
+
+main: main.c
+	${CC} ${CFLAGS} -o main main.c
+
 clean:
 	rm -f main *.o *.ppm
+
+.PHONY: all clean
